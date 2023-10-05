@@ -2,6 +2,31 @@
     margin: auto;
  }
 
+ body {
+  padding: 20px;
+ }
+
  h1 {
    text-align: center;
+ }
+
+ form {
+  margin: auto;
+  margin-top: 50px;
+  text-align: center;
+ }
+ 
+ .btn {
+  margin-top: 20px;
+  background-color: rgb(77, 77, 241);
+  color : white;
+  padding: 10px 30px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: medium;
+  border: 0px;
+ }
+
+ .btn:hover {
+  cursor: pointer;
  }

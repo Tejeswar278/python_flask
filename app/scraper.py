@@ -15,7 +15,7 @@ def scrape_wikipedia(url):
     #     raise Exception('Failed to fetch Wikipedia page')
     
     try:
-        response = requests.get(url, timeout=10)  # Specify the timeout in seconds
+        response = requests.get(url)  # Specify the timeout in seconds
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
     except requests.exceptions.Timeout:
         raise TimeoutError(f"Connection to {url} timed out.")
@@ -43,7 +43,7 @@ def scrape_wikipedia(url):
     for internal_url in internal_urls:
         # time.sleep(1)
         try:
-            internal_response = requests.get(internal_url,timeout=10)
+            internal_response = requests.get(internal_url,timeout=1)
             if internal_response.status_code == 200:
                 internal_soup = BeautifulSoup(internal_response.text, 'html.parser')
 
@@ -74,3 +74,52 @@ def scrape_wikipedia(url):
     # href_values = [tag.get('href') for tag in anchor_tags if tag.get('href') is not None]
 
     return {'content_snippets': content_snippets}
+
+def get_internal_urls(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        internal_urls = []
+
+        # Extract all links (a tags) from the page
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if href.startswith('/wiki/'):
+                # Assuming internal Wikipedia links; adjust the condition as needed
+                internal_urls.append('https://en.wikipedia.org' + href)
+
+        return internal_urls
+
+    except requests.RequestException as e:
+        return {'error': str(e)}
+
+def scrape_url_content(url, limit=3):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        paragraphs = soup.find_all('p')
+
+        content_lines = []
+
+        for paragraph in paragraphs:
+            # Extract text and split into lines
+            lines = paragraph.get_text().split('\n')
+
+            # Filter out empty lines
+            non_empty_lines = [line.strip() for line in lines if line.strip()]
+
+            # Extend the content_lines list with non-empty lines
+            content_lines.extend(non_empty_lines)
+
+            # Break if we reach the desired limit
+            if len(content_lines) >= limit:
+                break
+
+        return content_lines
+
+    except requests.RequestException as e:
+        return {'error': str(e)}

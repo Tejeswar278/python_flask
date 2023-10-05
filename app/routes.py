@@ -1,6 +1,6 @@
 from flask import request, jsonify, render_template
 from app import app, db
-from app.scraper import scrape_wikipedia
+from app.scraper import scrape_wikipedia, get_internal_urls,scrape_url_content
 from app.models import Response as ResponseModel
 
 @app.route('/')
@@ -26,15 +26,20 @@ def scrape():
         # return Response(generate_content(), content_type='application/json')
 
         # Scrape the Wikipedia page
-        result = scrape_wikipedia(url)
+        result = get_internal_urls(url)
 
         # Save responses to the database
         for internal_url in result:
-            response = ResponseModel(url=internal_url, content="")  # Initialize with empty content
+            content_lines = scrape_url_content(internal_url, limit=3)
+            content_lines_str = '\n'.join(content_lines)
+            print(f"content lines {internal_url}: {content_lines}")
+            response = ResponseModel(url=internal_url, content=content_lines_str)  # Initialize with empty content
             db.session.add(response)
             db.session.commit()
 
         # Render the index.html template with the scraped results
-        return render_template('index.html', result=result)
+        responses = ResponseModel.query.all()
+        print(f"responses.................... : {responses}")
+        return render_template('index.html', result=responses)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

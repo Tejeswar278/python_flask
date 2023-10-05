@@ -2,17 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wikipedia Scraper</title>
+    <title>Scraper</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Wikipedia Scraper</h1>
+    <h1>URL SCRAPER</h1>
     <form method="post" action="/scrape">
         <label for="url">Enter Wikipedi URL:</label>
-        <input type="text" id="url" name="url" required>
-        <button type="submit">Scrape</button>
+        <input type="text" id="url" name="url" required><br>
+        <button class="btn" type="submit">Scrape</button>
     </form>
-    <div id="result"></div>
+    <div id="result">
+        {% if result %}
+            <h2>Scraped Results</h2>
+            <ul>
+                {% for item in result.internal_urls %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+
+            <h2>Content Snippets</h2>
+            <ul>
+                {% for snippet in result.content_snippets %}
+                    <li>
+                        <strong>URL:</strong> {{ snippet.url }}<br>
+                        <strong>Content:</strong> {{ snippet.content }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
     <script>
         // Handle form submission and display results here using JavaScript
         document.getElementById('scrapeForm').addEventListener('submit', function (event) {
