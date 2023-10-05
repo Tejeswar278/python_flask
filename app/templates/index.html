@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wikipedia Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Wikipedia Scraper</h1>
+    <form method="post" action="/scrape">
+        <label for="url">Enter Wikipedi URL:</label>
+        <input type="text" id="url" name="url" required>
+        <button type="submit">Scrape</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        // Handle form submission and display results here using JavaScript
+        document.getElementById('scrapeForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+
+            // Make an asynchronous request to the backend
+            fetch('/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'url=' + encodeURIComponent(url),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the result div with the scraped data
+                document.getElementById('result').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'An error occurred while scraping.';
+            });
+        });
+    </script>
+</body>
+</html>
