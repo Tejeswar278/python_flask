@@ -14,23 +14,23 @@
     </form>
     <div id="result">
         {% if result %}
-            <h2>Scraped Results</h2>
-            <ul>
-                {% for item in result.internal_urls %}
-                    <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
-
-            <h2>Content Snippets</h2>
-            <ul>
-                {% for snippet in result.content_snippets %}
-                    <li>
-                        <strong>URL:</strong> {{ snippet.url }}<br>
-                        <strong>Content:</strong> {{ snippet.content }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        <ul>
+            {% for single_data in result %}
+                <li>
+                    <strong>URL:</strong> {{ single_data.url }}<br>
+                    <strong>Content Lines:</strong>
+                    <ul>
+                        {% for line in single_data.content_lines %}
+                            <li>{{ line }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No responses available.</p>
+    {% endif %}
     </div>
     <script>
         // Handle form submission and display results here using JavaScript
