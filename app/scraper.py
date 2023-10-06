@@ -75,7 +75,7 @@ def scrape_wikipedia(url):
 
     return {'content_snippets': content_snippets}
 
-def get_internal_urls(url):
+def get_internal_urls(url,limit):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -90,6 +90,9 @@ def get_internal_urls(url):
                 # Assuming internal Wikipedia links; adjust the condition as needed
                 internal_urls.append('https://en.wikipedia.org' + href)
 
+            if len(internal_urls) > limit:
+                break
+
         return internal_urls
 
     except requests.RequestException as e:
@@ -101,7 +104,7 @@ def scrape_url_content(url, limit=3):
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
-        paragraphs = soup.find_all('p')
+        paragraphs = soup.find_all('p')[:3]
 
         content_lines = []
 
